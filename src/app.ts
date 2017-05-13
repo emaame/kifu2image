@@ -111,7 +111,16 @@ class KifuViewer {
                 let x = hand_x+(i-4)*(kw+pad) - m3/2;
                 let y = hand_y-(kh+pad)/2.0;
                 let koma = player.hand.get(i);
-                let n = (koma.name == Goita.KomaName.Blank) ? PLACE : koma.dir * 10 + koma.name;
+                var dir  : Goita.KomaDirection = Goita.KomaDirection.Back;
+                var name : Goita.KomaName      = Goita.KomaName.Blank;
+                if (playerIndex==0 || this.openHand) {
+                    dir  = Goita.KomaDirection.Fore;
+                    name = koma.name;
+                }
+                var n = PLACE;
+                if (koma.dir != Goita.KomaDirection.Other) {
+                    n = dir * 10 + name;
+                }
                 ctx.drawImage(images[n], x, y);
             }
 
@@ -123,7 +132,19 @@ class KifuViewer {
                 let x = play_x + Math.floor(i/2)*(kw+pad) - 2*(kw+pad);
                 let y = play_y + (i%2-1)*(kh+pad);
                 let koma = player.play.get(i);
-                let n = (koma.name == Goita.KomaName.Blank) ? PLACE : (koma.dir * 10 + koma.name);
+                var dir  : Goita.KomaDirection = koma.dir;
+                var name : Goita.KomaName      = koma.name;
+                if (koma.dir == Goita.KomaDirection.Back) {
+                    if ((playerIndex==0 || this.openHand)) {
+                        name = koma.name;
+                    } else {
+                        name = Goita.KomaName.Blank;
+                    }
+                }
+                var n = PLACE;
+                if (koma.dir != Goita.KomaDirection.Other) {
+                    n = dir * 10 + name;
+                }
                 ctx.drawImage(images[n], x, y);
             }
             // highlight
@@ -206,9 +227,9 @@ class KifuViewer {
     resetNav(kifu : Goita.Kifu) {
         let openHandElement = <HTMLInputElement>document.getElementById("open-hand");
         openHandElement.onchange = (e) => {
-            this.setOpenHand( openHandElement.value == "yes" );
+            this.setOpenHand( openHandElement.checked );
         };
-        this.openHand = openHandElement.value == "yes";
+        this.openHand = openHandElement.checked;
 
         let roundButtonParent = <HTMLElement>document.getElementById("round-buttons");
         //clear
