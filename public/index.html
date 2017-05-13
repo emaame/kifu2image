@@ -4,11 +4,117 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <title>modern-front-end</title>
-        <script src="./bundle.js"></script>
+        <title>Goita KifuViewer</title>
+        <style>
+            #round-buttons button, #step-buttons button {
+                width: 2em;
+                text-align: center;
+                padding: 0;
+                margin: 0 0.1em;
+            }
+            #round-buttons button.pressed, #step-buttons button.pressed {
+                border: 0px;
+                background: aquamarine;
+            }
+        </style>
     </head>
     <body>
-        <p>hello, world</p>
+        <div id="nav">
+            <label for="round-buttons">Rounds:</label> <span id="round-buttons">rounds</span><br/>
+            <label for="step-buttons" > Steps:</label> <span id="step-buttons" >steps</span><br/>
+        </div>
+        <div id="options">
+            <input type="checkbox" id="open-hand" value="yes" /><label for="openHand">全員の手を開く</label>
+        </div>
+
+        <canvas id="canvas" width="542" height="542"></canvas>
+        <p></p>
+
+        <textarea id="kifuText" cols="50" rows="50">
+version: 1.0
+p0: "P1"
+p1: "P2"
+p2: "P3"
+p3: "P4"
+log:
+ - hand:
+     p0: "ししし馬馬銀金飛"
+     p1: "ししし馬銀角香王"
+     p2: "し馬香香銀金角飛"
+     p3: "ししし香銀金金王"
+   uchidashi: 0
+   score: [0,0]
+   game:
+    - ["0","し","馬"]
+    - ["0","し","馬"]
+    - ["1","馬","し"]
+    - ["1","角","し"]
+    - ["1","銀","し"]
+    - ["2","し","馬"]
+    - ["1","王","香"]
+# し受けの分岐（即受け）
+ - hand:
+     p0: "ししし馬馬銀金飛"
+     p1: "ししし馬銀角香王"
+     p2: "し馬香香銀金角飛"
+     p3: "ししし香銀金金王"
+   uchidashi: 0
+   score: [0,0]
+   game:
+    - ["0","し","馬"]
+    - ["0","し","馬"]
+    - ["1","馬","し"]
+    - ["1","角","し"]
+    - ["0","し","飛"]
+    - ["1","王","し"]
+    - ["2","し","馬"]
+    - ["3","王","し"]
+    - ["3","銀","し"]
+    - ["3","香","し"]
+    - ["3","金","金"]
+
+ - hand:
+     p0: "ししし馬馬銀金飛"
+     p1: "ししし馬銀角香王"
+     p2: "し馬香香銀金角飛"
+     p3: "ししし香銀金金王"
+   uchidashi: 0
+   score: [0,0]
+   game:
+    - ["0","し","馬"]
+    - ["0","し","馬"]
+    - ["1","馬","し"]
+    - ["1","角","し"]
+    - ["2","し","香"]
+    - ["3","香","し"]
+    - ["3","金","し"]
+    - ["3","金","し"]
+    - ["0","し","飛"]
+    - ["1","王","し"]
+    - ["1","香","銀"]
+
+ - hand:
+     p0: "ししし馬馬銀金飛"
+     p1: "ししし馬銀角香王"
+     p2: "し馬香香銀金角飛"
+     p3: "ししし香銀金金王"
+   uchidashi: 0
+   score: [0,0]
+   game:
+    - ["0","し","馬"]
+    - ["0","し","馬"]
+    - ["1","馬","し"]
+    - ["2","し","馬"]
+    - ["3","王","し"]
+    - ["3","金","し"]
+    - ["3","金","し"]
+    - ["0","し","飛"]
+    - ["1","王","し"]
+
+
+        </textarea>
+
+        <script src="./bundle.js"></script>
     </body>
 </html>
 
