@@ -3,9 +3,11 @@ Make Goita kifu images from kifu format of Goita Online.
 
 # Development
 1. download / clone from github.
+1. install node.js
+1. install TypeScript
 1. ```npm install```
 1. ```npm start```
-And you can access localhost:8080.
+Then you can access localhost:8080.
 
 # Build
 ```npm run build``` builds ```public//bundle.js.html```.

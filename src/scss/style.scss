@@ -1,3 +1,14 @@
 body {
-    color: darkcyan;
+    color: white;
+}
+
+#round-buttons, #step-bottuns {
+    button.pressed {
+        border: 0px;
+        background-color: aquamarine;
+    }
+    button.enable {
+        border: 1px;
+        background-color: white;
+    }
 }

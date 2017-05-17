@@ -49,7 +49,17 @@ export class KomaCollection {
         this.list[this.count] = new Koma(name, dir);
         this.count++;
     }
-    take(name:KomaName) {
+    // 頭からn駒取り出す
+    take(n:number) {
+        let taken = this.list.splice(0, n);
+        this.count -= n;
+        for(var i=this.count; i<8; ++i) {
+            this.list[i] = Koma.Blank;
+        }
+        return taken;
+    }
+    // nameと一致する駒を一つ取り除く
+    remove(name:KomaName) {
         for(var i=0; i<this.list.length; ++i) {
             if (this.list[i].name != name) continue;
             this.list[i] = Koma.Blank;
@@ -111,8 +121,8 @@ export class Player {
         return newPlayer;
     }
     put(defence:KomaName, attack:KomaName, fuse:boolean) {
-        this.hand.take(defence);
-        this.hand.take(attack);
+        this.hand.remove(defence);
+        this.hand.remove(attack);
         this.hand.sortSelf();
         this.play.put(defence, fuse ? KomaDirection.Back : KomaDirection.Fore);
         this.play.put(attack, KomaDirection.Fore);
@@ -144,6 +154,9 @@ export class State {
         `${this.players[2].to_s()}¥n` + 
         `${this.players[3].to_s()}¥n`;
     }
+    ended() {
+        return this.players.find( (player) => { return (player.hand.count == 0); });
+    }
 }
 export class Round {
     states: Array<State> = [];
@@ -173,10 +186,19 @@ export class Kifu {
                 let attack  = stringToKomaName[step[2]];
                 state.players[who].put(defence, attack, state.uchidashi == who);
                 state.uchidashi = who;
+                // 終了時には全員の手を開く
+                if (state.ended()) {
+                    // 余った手駒を場に並べる
+                    for(let player of state.players) {
+                        let rest = player.hand.take(player.hand.count);
+                        for(let koma of rest) {
+                            player.play.put( koma.name, KomaDirection.Rest );
+                        }
+                    }
+                }
                 round.states.push(state.clone());
-            }
-            let players = round.states[6].players;
 
+            }
             this.rounds.push(round);
         }
         return this;
