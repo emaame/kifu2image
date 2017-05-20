@@ -1,14 +1,19 @@
 # kifu2image
-Make Goita kifu images from kifu format of Goita Online.
+ごいたオンラインの棋譜を画像に変換します。
 
-# Development
-1. download / clone from github.
-1. install node.js
-1. install TypeScript
-1. ```npm install```
-1. ```npm start```
-Then you can access localhost:8080.
+# 使い方
+サービスにアクセスして棋譜をアップロードして画像生成を押すだけです。
+各種オプションを必要に応じてご利用ください。
 
-# Build
-```npm run build``` builds ```public//bundle.js.html```.
-open ```index.html``` to use.
+# 実行方法
+手元で動かすには node.js などが必要になります。
+1. この github を clone するか、zip を落として適当な場所に展開します
+1. node.js をインストールします
+1. npm install -g TypeScript などとして TypeScript をインストールします。
+1. ```npm install``` で必要なライブラリをまとめてインストールします
+1. ```npm start``` でローカルサーバーを開始できます
+ローカルサーバーが起動したら http://localhost:8080 でアクセスできるようになります
+
+# 配布用ファイルの生成
+```npm run build``` で ```public//bundle.js``` が生成されます。
+後は、```public/index.html``` を開くとサービスを利用できます。

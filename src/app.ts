@@ -13,28 +13,52 @@ const HIGHLIGHT = 31;
 
 var images : imageList = {};
 
+var loadedCount = 0;
+var assetsCount = 0;
+var imageReady = false;
+function image_onloaded(e:Event) {
+    loadedCount++;
+    imageReady = (loadedCount >= assetsCount);
+}
+
 for(let t of komaTypes) {
     for(let n of komaNames) {
         let img = new Image();
-        img.src = require(`./img/${t}${n}.png`);
+        img.src = require(`./img/${t}${n}.png`); assetsCount++;
+        img.onload = image_onloaded;
         images[t*10 + n] = img;
     }
 }
 
 { // hide temp vars
     let placeImg = new Image();
-    placeImg.src = require("./img/place.png");
+    placeImg.src = require("./img/place.png"); assetsCount++;
+    placeImg.onload = image_onloaded;
     images[PLACE] = placeImg;
+    
 
     let highlightImg = new Image();
-    highlightImg.src = require("./img/highlight.png");
+    highlightImg.src = require("./img/highlight.png"); assetsCount++;
+    highlightImg.onload = image_onloaded;
     images[HIGHLIGHT] = highlightImg;
+
 }
+
+{   // wait to images loaded
+    var count = 0;
+    while(!imageReady && count < 500) {
+        setTimeout(100);
+        count++;
+    }
+}
+
+
 
 class KifuViewer {
     roundIndex: number;
     stepIndex: number;
     openHand: boolean;
+    kifu: Goita.Kifu;
 
     render(state: Goita.State) {
         // 描画のパラメータ
@@ -169,10 +193,11 @@ class KifuViewer {
     }
 
     draw() {
-        this.render( kifu.rounds[this.roundIndex].states[this.stepIndex] );
+        this.render( this.kifu.rounds[this.roundIndex].states[this.stepIndex] );
     }
 
     reset(kifu : Goita.Kifu) {
+        this.kifu = kifu;
         this.resetNav(kifu);
         this.draw();
     }
@@ -202,7 +227,7 @@ class KifuViewer {
         //clear
         let stepButtonParent = <HTMLElement>document.getElementById( "step-buttons");
         stepButtonParent.innerHTML = "";
-        this.stepButtons = kifu.rounds[this.roundIndex].states.map( (state:Goita.State, stepIndex:number) => {
+        this.stepButtons = this.kifu.rounds[this.roundIndex].states.map( (state:Goita.State, stepIndex:number) => {
             let button = this.createButton(`${stepIndex}`);
             button.onclick = (e) => {
                 this.setStepIndex(stepIndex);
@@ -244,10 +269,26 @@ class KifuViewer {
         this.setRoundIndex(0);
     }
 }
-
-let kifu = new Goita.Kifu;
+/*
 let textarea = <HTMLTextAreaElement>document.getElementById("kifuText");
 kifu.load( textarea.textContent! );
+*/
 
-let viewer = new KifuViewer();
-viewer.reset(kifu);
+let kifuUpload = <HTMLInputElement>document.getElementById("kifuFile");
+kifuUpload.onchange = (e:Event) => {
+    let file = kifuUpload.files![0];
+    if (!file.name.match(/.yaml$/)) {
+        alert("棋譜ファイルは YAML 形式です");
+        return;
+    }
+
+    var reader = new FileReader();
+    reader.onload = () => {
+        let kifu = new Goita.Kifu;
+        kifu.load( reader.result );
+
+        let viewer = new KifuViewer();
+        viewer.reset(kifu);
+    }
+    reader.readAsText(file);
+}
