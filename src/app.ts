@@ -1,6 +1,8 @@
 
 
 import * as Goita from "./goita_kifu";
+import * as jszip from "jszip";
+import { saveAs } from 'file-saver';
 
 let komaTypes = [0,1,2];
 let komaNames = [0,1,2,3,4,5,6,7,8,9];
@@ -28,6 +30,7 @@ class KifuViewer {
     stepIndex: number;
     openHand: boolean;
     kifu: Goita.Kifu;
+    canvas: HTMLCanvasElement;
 
     render(state: Goita.State) {
         // 描画のパラメータ
@@ -69,11 +72,12 @@ class KifuViewer {
         let sw = 140, sh = 60;
         let sx = cx-sw/2.0, sy = cy-sh/2.0;
         
-        var can = <HTMLCanvasElement>document.getElementById("canvas");
-        var ctx : CanvasRenderingContext2D = can.getContext("2d")!;
+        this.canvas = <HTMLCanvasElement>document.getElementById("canvas");
+        var ctx : CanvasRenderingContext2D = this.canvas.getContext("2d")!;
 
         //clear
-        ctx.clearRect(0, 0, w, h);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, w, h);
 
         // draw board
         ctx.fillStyle = '#cccc99';
@@ -171,6 +175,11 @@ class KifuViewer {
         this.draw();
     }
 
+    statusText() {
+        return `goita_round${viewer.roundIndex}_step${viewer.stepIndex}_player${viewer.playerIndex+1}`
+    }
+
+
     private createButton(text:string) {
         let button = <HTMLButtonElement>document.createElement("button");
         button.textContent = text;
@@ -259,12 +268,11 @@ class KifuViewer {
         this.setPlayerIndex(0);
     }
 }
-
+let viewer = new KifuViewer();
 {
     let kifu = new Goita.Kifu;
     let textarea = <HTMLTextAreaElement>document.getElementById("kifuText");
     kifu.load( textarea.textContent! );
-    let viewer = new KifuViewer();
     viewer.reset(kifu);
 }
 
@@ -280,9 +288,40 @@ kifuUpload.onchange = (e:Event) => {
     reader.onload = () => {
         let kifu = new Goita.Kifu;
         kifu.load( reader.result );
-
-        let viewer = new KifuViewer();
         viewer.reset(kifu);
     }
     reader.readAsText(file);
 }
+
+function time2str() {
+    let date = new Date();
+    return `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}_${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}`;
+}
+
+let saveSingle = <HTMLInputElement>document.getElementById("save-single");
+let saveZip = <HTMLInputElement>document.getElementById("save-zip");
+
+saveSingle.onclick = (e) => {
+    let filename = `goita_${viewer.statusText()}_${time2str()}.png`
+    let blob = viewer.canvas.toBlob( (blob) => {
+        saveAs(blob!, filename);
+    } )
+}
+saveZip.onclick = (e) => {
+    let zip = new jszip();
+    let savable = new Image();
+
+    viewer.kifu.rounds.forEach((round, roundIndex) => {
+        viewer.setRoundIndex(roundIndex);
+        round.states.forEach((state, stepIndex) => {
+            viewer.setStepIndex(stepIndex);
+            let path = viewer.statusText() + ".png";
+            savable.src = viewer.canvas.toDataURL();
+            let blob = savable.src.substr(savable.src.indexOf(',')+1);
+            zip.file(path, blob, {base64:true});
+        });
+    });
+
+    zip.generateAsync({"type":"blob"})
+    .then( (blob) => {saveAs(blob, `goita_${time2str()}.zip`);});
+};
