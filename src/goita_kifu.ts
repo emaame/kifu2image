@@ -145,6 +145,7 @@ export class State {
         newState.players[3] = this.players[3].clone();
         newState.scores = this.scores.slice();
         newState.uchidashi = this.uchidashi;
+        newState.ended = this.ended;
         return newState;
     }
     to_s() {
@@ -154,8 +155,13 @@ export class State {
         `${this.players[2].to_s()}¥n` + 
         `${this.players[3].to_s()}¥n`;
     }
-    ended() {
-        return this.players.find( (player) => { return (player.hand.count == 0); });
+
+    ended: boolean;
+
+    put(who:number, defence:KomaName, attack:KomaName) {
+        this.players[who].put(defence, attack, this.uchidashi == who);
+        this.ended = (this.players[who].hand.count == 0);
+        this.uchidashi = who;
     }
 }
 export class Round {
@@ -184,10 +190,9 @@ export class Kifu {
                 let who     = parseInt(step[0]); // toInt
                 let defence = stringToKomaName[step[1]];
                 let attack  = stringToKomaName[step[2]];
-                state.players[who].put(defence, attack, state.uchidashi == who);
-                state.uchidashi = who;
+                state.put(who, defence, attack);
                 // 終了時には全員の手を開く
-                if (state.ended()) {
+                if (state.ended) {
                     // 余った手駒を場に並べる
                     for(let player of state.players) {
                         let rest = player.hand.take(player.hand.count);

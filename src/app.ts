@@ -106,7 +106,7 @@ class KifuViewer {
                 let koma = player.hand.get(i);
                 var dir  : Goita.KomaDirection = Goita.KomaDirection.Back;
                 var name : Goita.KomaName      = Goita.KomaName.Blank;
-                if (playerIndex==0 || this.openHand) {
+                if (playerIndex==this.playerIndex || this.openHand) {
                     dir  = Goita.KomaDirection.Fore;
                     name = koma.name;
                 }
@@ -128,7 +128,7 @@ class KifuViewer {
                 var dir  : Goita.KomaDirection = koma.dir;
                 var name : Goita.KomaName      = koma.name;
                 if (koma.dir == Goita.KomaDirection.Back) {
-                    if ((playerIndex==0 || this.openHand)) {
+                    if (playerIndex==this.playerIndex || this.openHand || state.ended) {
                         name = koma.name;
                     } else {
                         name = Goita.KomaName.Blank;
