@@ -16,6 +16,11 @@ export const komaNameToString : {[key:number]:string} = {[KomaName.Blank]:"_",
     [KomaName.Hi]: "飛", [KomaName.Kaku]:"角", [KomaName.Ou]:"王", [KomaName.Ou]:"玉"
 };
 
+export const komaNameToScore : {[key:number]:number} = {[KomaName.Blank]:0,
+    [KomaName.Shi]: 10, [KomaName.Gon]:20, [KomaName.Uma]:20, [KomaName.Gin]:30, [KomaName.Kin]:30,
+    [KomaName.Hi]: 40, [KomaName.Kaku]:40, [KomaName.Ou]:50, [KomaName.Ou]:50
+};
+
 
 export class Koma {
     name: KomaName;
@@ -159,8 +164,18 @@ export class State {
     ended: boolean;
 
     put(who:number, defence:KomaName, attack:KomaName) {
-        this.players[who].put(defence, attack, this.uchidashi == who);
-        this.ended = (this.players[who].hand.count == 0);
+        let fuse = (this.uchidashi == who);
+        let p = this.players[who];
+        p.put(defence, attack, fuse);
+        this.ended = (p.hand.count == 0);
+        if (this.ended) {
+            var score = komaNameToScore[attack];
+            if (fuse && defence==attack) {
+                score = score * 2;
+            }
+            let side = who % 2;
+            this.scores[side] += score;
+        }
         this.uchidashi = who;
     }
 }
