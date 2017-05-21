@@ -6,30 +6,75 @@
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <title>Goita KifuViewer</title>
         <style>
-            #round-buttons button, #step-buttons button {
-                width: 2em;
+            #round-buttons button,
+            #step-buttons button,
+            #player-buttons button {
+                width: 2.5em;
                 text-align: center;
                 padding: 0;
                 margin: 0 0.1em;
             }
-            #round-buttons button.pressed, #step-buttons button.pressed {
+            #round-buttons button.pressed,
+            #step-buttons button.pressed,
+            #player-buttons button.pressed {
                 border: 0px;
                 background: aquamarine;
+            }
+            #kifuText {
+                display: none;
+            }
+            #assets {
+                display: none;
             }
         </style>
     </head>
     <body>
         <div id="nav">
-            <input type="file" id="kifuFile" />
-            <label for="round-buttons">Rounds:</label> <span id="round-buttons">rounds</span><br/>
-            <label for="step-buttons" > Steps:</label> <span id="step-buttons" >steps</span><br/>
+            <input type="file" id="kifuFile" /><br />
+            <label for="round-buttons">Rounds:</label> <span id="round-buttons">rounds</span>
+            <label for="step-buttons" > Steps:</label> <span id="step-buttons" >steps</span>
         </div>
         <div id="options">
+            <label for="player-buttons" > Players:</label> <span id="player-buttons" >players</span>
             <input type="checkbox" id="open-hand" checked /><label for="openHand">全員の手を開く</label>
         </div>
 
         <canvas id="canvas" width="542" height="542"></canvas>
         <p></p>
+        <p id="assets">
+            <img src="assets/00.png" width="40" height="47" id="img0" />
+            <img src="assets/01.png" width="40" height="47" id="img1" />
+            <img src="assets/02.png" width="40" height="47" id="img2" />
+            <img src="assets/03.png" width="40" height="47" id="img3" />
+            <img src="assets/04.png" width="40" height="47" id="img4" />
+            <img src="assets/05.png" width="40" height="47" id="img5" />
+            <img src="assets/06.png" width="40" height="47" id="img6" />
+            <img src="assets/07.png" width="40" height="47" id="img7" />
+            <img src="assets/08.png" width="40" height="47" id="img8" />
+            <img src="assets/09.png" width="40" height="47" id="img9" /> 
+            <img src="assets/10.png" width="40" height="47" id="img10" />
+            <img src="assets/11.png" width="40" height="47" id="img11" />
+            <img src="assets/12.png" width="40" height="47" id="img12" />
+            <img src="assets/13.png" width="40" height="47" id="img13" />
+            <img src="assets/14.png" width="40" height="47" id="img14" />
+            <img src="assets/15.png" width="40" height="47" id="img15" />
+            <img src="assets/16.png" width="40" height="47" id="img16" />
+            <img src="assets/17.png" width="40" height="47" id="img17" />
+            <img src="assets/18.png" width="40" height="47" id="img18" />
+            <img src="assets/19.png" width="40" height="47" id="img19" /> 
+            <img src="assets/20.png" width="40" height="47" id="img20" />
+            <img src="assets/21.png" width="40" height="47" id="img21" />
+            <img src="assets/22.png" width="40" height="47" id="img22" />
+            <img src="assets/23.png" width="40" height="47" id="img23" />
+            <img src="assets/24.png" width="40" height="47" id="img24" />
+            <img src="assets/25.png" width="40" height="47" id="img25" />
+            <img src="assets/26.png" width="40" height="47" id="img26" />
+            <img src="assets/27.png" width="40" height="47" id="img27" />
+            <img src="assets/28.png" width="40" height="47" id="img28" />
+            <img src="assets/29.png" width="40" height="47" id="img29" /> 
+            <img src="assets/place.png" width="40" height="47" id="img30" />
+            <img src="assets/highlight.png" width="40" height="47" id="img31" /> 
+        </p>
 
         <textarea id="kifuText" cols="50" rows="50">
 version: 1.0
@@ -111,10 +156,7 @@ log:
     - ["3","金","し"]
     - ["0","し","飛"]
     - ["1","王","し"]
-
-
         </textarea>
-
         <script src="./bundle.js"></script>
     </body>
 </html>

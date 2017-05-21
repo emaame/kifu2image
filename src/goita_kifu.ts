@@ -8,12 +8,12 @@ export enum KomaDirection {
 }
 export const stringToKomaName : {[key:string]:KomaName} = {"_":KomaName.Blank,
     "し":KomaName.Shi, "香":KomaName.Gon, "馬":KomaName.Uma, "銀":KomaName.Gin, "金":KomaName.Kin,
-    "飛":KomaName.Hi, "角":KomaName.Kaku, "王":KomaName.Ou, "玉":KomaName.Dama
+    "飛":KomaName.Hi, "角":KomaName.Kaku, "王":KomaName.Ou, "玉":KomaName.Ou
 };
 
 export const komaNameToString : {[key:number]:string} = {[KomaName.Blank]:"_",
     [KomaName.Shi]: "し", [KomaName.Gon]:"香", [KomaName.Uma]:"馬", [KomaName.Gin]:"銀", [KomaName.Kin]:"金",
-    [KomaName.Hi]: "飛", [KomaName.Kaku]:"角", [KomaName.Ou]:"王", [KomaName.Dama]:"玉"
+    [KomaName.Hi]: "飛", [KomaName.Kaku]:"角", [KomaName.Ou]:"王", [KomaName.Ou]:"玉"
 };
 
 

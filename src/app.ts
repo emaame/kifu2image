@@ -2,8 +2,6 @@
 
 import * as Goita from "./goita_kifu";
 
-//import styles from './scss/style.scss';
-
 let komaTypes = [0,1,2];
 let komaNames = [0,1,2,3,4,5,6,7,8,9];
 type imageList = {[key: number]: HTMLImageElement};
@@ -11,50 +9,21 @@ type imageList = {[key: number]: HTMLImageElement};
 const PLACE     = 30;
 const HIGHLIGHT = 31;
 
+/* load images */
 var images : imageList = {};
-
-var loadedCount = 0;
-var assetsCount = 0;
-var imageReady = false;
-function image_onloaded(e:Event) {
-    loadedCount++;
-    imageReady = (loadedCount >= assetsCount);
-}
-
 for(let t of komaTypes) {
     for(let n of komaNames) {
-        let img = new Image();
-        img.src = require(`./img/${t}${n}.png`); assetsCount++;
-        img.onload = image_onloaded;
-        images[t*10 + n] = img;
+        let d = t*10 + n;
+        images[d] = <HTMLImageElement>document.getElementById(`img${d}`);
     }
 }
-
-{ // hide temp vars
-    let placeImg = new Image();
-    placeImg.src = require("./img/place.png"); assetsCount++;
-    placeImg.onload = image_onloaded;
-    images[PLACE] = placeImg;
-    
-
-    let highlightImg = new Image();
-    highlightImg.src = require("./img/highlight.png"); assetsCount++;
-    highlightImg.onload = image_onloaded;
-    images[HIGHLIGHT] = highlightImg;
-
-}
-
-{   // wait to images loaded
-    var count = 0;
-    while(!imageReady && count < 500) {
-        setTimeout(100);
-        count++;
-    }
-}
+images[PLACE] = <HTMLImageElement>document.getElementById(`img${PLACE}`);
+images[HIGHLIGHT] = <HTMLImageElement>document.getElementById(`img${HIGHLIGHT}`);
 
 
 
 class KifuViewer {
+    playerIndex: number;
     roundIndex: number;
     stepIndex: number;
     openHand: boolean;
@@ -81,7 +50,7 @@ class KifuViewer {
         // kh  / ¥   / ¥   / ¥   / ¥ 
         //    |___| |___| |___| |___|
         // --------
-        // m2       -- here is play_y
+        // m2       -- play_y
         // --------
         //      .     .     .     .
         // kh  / ¥   / ¥   / ¥   / ¥ 
@@ -90,7 +59,7 @@ class KifuViewer {
         // m2
         // --------
         //      .
-        // kh  / ¥   -- here is hand_y 
+        // kh  / ¥   -- hand_y 
         //    |___|
         //----------
         // m1
@@ -126,7 +95,7 @@ class KifuViewer {
 
             // rotate to personal board
             ctx.translate(cx,cy);
-            ctx.rotate(-2.0*Math.PI*playerIndex/4.0); // counter-clock-wise from bottom
+            ctx.rotate(-2.0*Math.PI*(playerIndex - this.playerIndex)/4.0); // counter-clock-wise from bottom
             ctx.translate(-cx,-cy);
 
             // draw hands
@@ -150,9 +119,9 @@ class KifuViewer {
 
             // draw plays
             for(var i=0; i<8; ++i) {
-                // 0 2                  4 8
-                //    |here is (px,py)|
-                // 1 3                  5 7
+                // 0 2         4 8
+                //    |(px,py)|
+                // 1 3         5 7
                 let x = play_x + Math.floor(i/2)*(kw+pad) - 2*(kw+pad);
                 let y = play_y + (i%2-1)*(kh+pad);
                 let koma = player.play.get(i);
@@ -179,10 +148,10 @@ class KifuViewer {
                 ctx.drawImage(images[HIGHLIGHT], x, y);
             }
             
-            //player name
+            // player name
             {
                 ctx.fillStyle = '#000000';
-                ctx.font = "14px 'ＭＳ Ｐゴシック'";
+                ctx.font = "14px 'Alial'";
                 let x = play_x - kw*2;
                 let y = play_y + kh + pad + 10 + pad;
 
@@ -215,6 +184,7 @@ class KifuViewer {
 
     roundButtons: Array<HTMLButtonElement> = [];
     stepButtons: Array<HTMLButtonElement> = [];
+    playerButtons: Array<HTMLButtonElement> = [];
 
     setRoundIndex(roundIndex: number) {
         // update view state
@@ -248,6 +218,15 @@ class KifuViewer {
         this.stepButtons[this.stepIndex].classList.add("pressed");
         this.draw();
     }
+    setPlayerIndex(playerIndex: number) {
+        // update view state
+        if (this.playerButtons[this.playerIndex]) {
+            this.playerButtons[this.playerIndex].classList.remove("pressed");
+        }
+        this.playerIndex = playerIndex;
+        this.playerButtons[this.playerIndex].classList.add("pressed");
+        this.draw();
+    }
 
     resetNav(kifu : Goita.Kifu) {
         let openHandElement = <HTMLInputElement>document.getElementById("open-hand");
@@ -266,13 +245,28 @@ class KifuViewer {
             return button;
         } );
 
+        let playerButtonParent = <HTMLElement>document.getElementById("player-buttons");
+        //clear
+        playerButtonParent.innerHTML = "";
+        this.playerButtons = kifu.rounds[0].states[0].players.map( (player:Goita.Player, playerIndex:number) => {
+            let button = this.createButton(`P${playerIndex + 1}`);
+            button.onclick = (e) => { this.setPlayerIndex(playerIndex); };
+            playerButtonParent.appendChild(button);
+            return button;
+        } );
+
         this.setRoundIndex(0);
+        this.setPlayerIndex(0);
     }
 }
-/*
-let textarea = <HTMLTextAreaElement>document.getElementById("kifuText");
-kifu.load( textarea.textContent! );
-*/
+
+{
+    let kifu = new Goita.Kifu;
+    let textarea = <HTMLTextAreaElement>document.getElementById("kifuText");
+    kifu.load( textarea.textContent! );
+    let viewer = new KifuViewer();
+    viewer.reset(kifu);
+}
 
 let kifuUpload = <HTMLInputElement>document.getElementById("kifuFile");
 kifuUpload.onchange = (e:Event) => {
