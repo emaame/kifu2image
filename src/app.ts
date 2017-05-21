@@ -1,11 +1,7 @@
-
-
 import * as Goita from "./goita_kifu";
 import * as jszip from "jszip";
 import { saveAs } from 'file-saver';
 
-let komaTypes = [0,1,2];
-let komaNames = [0,1,2,3,4,5,6,7,8,9];
 type imageList = {[key: number]: HTMLImageElement};
 
 const PLACE     = 30;
@@ -13,8 +9,8 @@ const HIGHLIGHT = 31;
 
 /* load images */
 var images : imageList = {};
-for(let t of komaTypes) {
-    for(let n of komaNames) {
+for(let t of [0,1,2]) {
+    for(let n of [0,1,2,3,4,5,6,7,8,9]) {
         let d = t*10 + n;
         images[d] = <HTMLImageElement>document.getElementById(`img${d}`);
     }
