@@ -67,7 +67,7 @@ class KifuViewer {
         //------------------------
         let hand_x = cx, hand_y = h - m1 - kh/2.0;
         let play_x = cx, play_y = h - m1 - kh - m2 - kh - m2/2.0;
-        let sw = 120, sh = 50;
+        let sw = kw*3.5, sh = 50;
         let sx = cx-sw/2.0, sy = cy-sh/2.0;
         
         this.canvas = <HTMLCanvasElement>document.getElementById("canvas");
@@ -97,7 +97,7 @@ class KifuViewer {
         ctx.fillRect(sx, sy, sw, sh);
         for(let i of [0,1]) {
             ctx.fillStyle = '#000000';
-            ctx.font = "12px 'ＭＳ Ｐゴシック'";
+            ctx.font = "14px 'ＭＳ Ｐゴシック'";
             let x = sx + 10;
             let y = sy + 18 + 22*i;
             ctx.fillText(`Player ${i+1}&${i+3}: ${state.scores[i]}`, x, y);
@@ -164,7 +164,7 @@ class KifuViewer {
             // player name
             {
                 ctx.fillStyle = '#000000';
-                ctx.font = "12px 'Alial'";
+                ctx.font = "14px 'Alial'";
                 let x = play_x - kw*2;
                 let y = play_y + kh + pad + 6 + pad;
 
