@@ -1,7 +1,7 @@
 import * as Goita from "./goita_kifu";
 import * as jszip from "jszip";
 import * as hammer from "hammerjs";
-import { saveAs } from 'file-saver';
+import * as download from 'downloadjs';
 
 type imageList = {[key: number]: HTMLImageElement};
 
@@ -347,7 +347,7 @@ let saveZip = <HTMLInputElement>document.getElementById("save-zip");
 saveSingle.onclick = (e) => {
     let filename = `goita_${viewer.statusText()}_${time2str()}.png`
     let blob = viewer.canvas.toBlob( (blob) => {
-        saveAs(blob!, filename);
+        download(blob!, filename, "image/png");
     } )
 }
 saveZip.onclick = (e) => {
@@ -368,5 +368,5 @@ saveZip.onclick = (e) => {
     zip.file(`goita_${time2str()}.yaml`, viewer.kifu.text);
 
     zip.generateAsync({"type":"blob"})
-    .then( (blob) => {saveAs(blob, `goita_${time2str()}.zip`);});
+    .then( (blob) => { download(blob, `goita_${time2str()}.zip`, "application/zip");});
 };
