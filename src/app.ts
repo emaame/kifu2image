@@ -27,12 +27,14 @@ class KifuViewer {
     openHand: boolean;
     kifu: Goita.Kifu;
     canvas: HTMLCanvasElement;
+    kw: number;
+    kh: number;
 
     render(state: Goita.State) {
         // 描画のパラメータ
-        let kw = 40, kh = 47;
+        let kw = this.kw, kh = this.kh;
         
-        let m1 = kw/4, m2 = kw/2, m3 = kw/4;
+        let m1 = kw/4, m2 = kw/2, m3 = kw/8;
         let pad = 3;
 
         let w = m1 + kh + m2 + kh*2 + m2 + kw * 4 + m2 + kh*2 + m2 + kh + m1;
@@ -65,10 +67,12 @@ class KifuViewer {
         //------------------------
         let hand_x = cx, hand_y = h - m1 - kh/2.0;
         let play_x = cx, play_y = h - m1 - kh - m2 - kh - m2/2.0;
-        let sw = 140, sh = 60;
+        let sw = 120, sh = 50;
         let sx = cx-sw/2.0, sy = cy-sh/2.0;
         
         this.canvas = <HTMLCanvasElement>document.getElementById("canvas");
+        this.canvas.width = w;
+        this.canvas.height = h;
         var ctx : CanvasRenderingContext2D = this.canvas.getContext("2d")!;
 
         //clear
@@ -84,9 +88,9 @@ class KifuViewer {
         ctx.fillRect(sx, sy, sw, sh);
         for(let i of [0,1]) {
             ctx.fillStyle = '#000000';
-            ctx.font = "14px 'ＭＳ Ｐゴシック'";
+            ctx.font = "12px 'ＭＳ Ｐゴシック'";
             let x = sx + 10;
-            let y = sy + 24 + 25*i;
+            let y = sy + 18 + 22*i;
             ctx.fillText(`Player ${i+1}&${i+3}: ${state.scores[i]}`, x, y);
         }
         // draw players
@@ -151,9 +155,9 @@ class KifuViewer {
             // player name
             {
                 ctx.fillStyle = '#000000';
-                ctx.font = "14px 'Alial'";
+                ctx.font = "12px 'Alial'";
                 let x = play_x - kw*2;
-                let y = play_y + kh + pad + 10 + pad;
+                let y = play_y + kh + pad + 6 + pad;
 
                 ctx.fillText(player.name, x, y);
             }
@@ -162,6 +166,8 @@ class KifuViewer {
     }
 
     draw() {
+        this.kw = images[0].width;
+        this.kh = images[0].height;
         this.render( this.kifu.rounds[this.roundIndex].states[this.stepIndex] );
     }
 
@@ -317,6 +323,8 @@ saveZip.onclick = (e) => {
             zip.file(path, blob, {base64:true});
         });
     });
+
+    zip.file(`goita_${time2str()}.yaml`, viewer.kifu.text);
 
     zip.generateAsync({"type":"blob"})
     .then( (blob) => {saveAs(blob, `goita_${time2str()}.zip`);});

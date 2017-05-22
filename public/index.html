@@ -6,6 +6,10 @@
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <script src="https://use.fontawesome.com/2a7e640d87.js"></script>
 
+        <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <meta http-equiv="content-script-type" content="text/javascript">
+        <meta http-equiv="content-style-type" content="text/css">
+
         <title>Goita KifuViewer</title>
         <style>
             #nav button,
@@ -29,7 +33,7 @@
             #upload-label {
                 background: darkred;
                 color: white;
-                padding: 3px;
+                padding: 4px;
             }
             #kifuText {
                 display: none;
@@ -55,38 +59,38 @@
         <canvas id="canvas" width="542" height="542"></canvas>
         <p></p>
         <p id="assets">
-            <img src="assets/00.png" width="40" height="47" id="img0" />
-            <img src="assets/01.png" width="40" height="47" id="img1" />
-            <img src="assets/02.png" width="40" height="47" id="img2" />
-            <img src="assets/03.png" width="40" height="47" id="img3" />
-            <img src="assets/04.png" width="40" height="47" id="img4" />
-            <img src="assets/05.png" width="40" height="47" id="img5" />
-            <img src="assets/06.png" width="40" height="47" id="img6" />
-            <img src="assets/07.png" width="40" height="47" id="img7" />
-            <img src="assets/08.png" width="40" height="47" id="img8" />
-            <img src="assets/09.png" width="40" height="47" id="img9" /> 
-            <img src="assets/10.png" width="40" height="47" id="img10" />
-            <img src="assets/11.png" width="40" height="47" id="img11" />
-            <img src="assets/12.png" width="40" height="47" id="img12" />
-            <img src="assets/13.png" width="40" height="47" id="img13" />
-            <img src="assets/14.png" width="40" height="47" id="img14" />
-            <img src="assets/15.png" width="40" height="47" id="img15" />
-            <img src="assets/16.png" width="40" height="47" id="img16" />
-            <img src="assets/17.png" width="40" height="47" id="img17" />
-            <img src="assets/18.png" width="40" height="47" id="img18" />
-            <img src="assets/19.png" width="40" height="47" id="img19" /> 
-            <img src="assets/20.png" width="40" height="47" id="img20" />
-            <img src="assets/21.png" width="40" height="47" id="img21" />
-            <img src="assets/22.png" width="40" height="47" id="img22" />
-            <img src="assets/23.png" width="40" height="47" id="img23" />
-            <img src="assets/24.png" width="40" height="47" id="img24" />
-            <img src="assets/25.png" width="40" height="47" id="img25" />
-            <img src="assets/26.png" width="40" height="47" id="img26" />
-            <img src="assets/27.png" width="40" height="47" id="img27" />
-            <img src="assets/28.png" width="40" height="47" id="img28" />
-            <img src="assets/29.png" width="40" height="47" id="img29" /> 
-            <img src="assets/place.png" width="40" height="47" id="img30" />
-            <img src="assets/highlight.png" width="40" height="47" id="img31" /> 
+            <img src="assets/back_shi.png"    width="30" height="35" id="img0" />
+            <img src="assets/back_gon.png"    width="30" height="35" id="img1" />
+            <img src="assets/back_uma.png"    width="30" height="35" id="img2" />
+            <img src="assets/back_gin.png"    width="30" height="35" id="img3" />
+            <img src="assets/back_kin.png"    width="30" height="35" id="img4" />
+            <img src="assets/back_kaku.png"   width="30" height="35" id="img5" />
+            <img src="assets/back_hi.png"     width="30" height="35" id="img6" />
+            <img src="assets/back_ou.png"     width="30" height="35" id="img7" />
+            <img src="assets/back_hatena.png" width="30" height="35" id="img8" />
+            <img src="assets/back.png"        width="30" height="35" id="img9" /> 
+            <img src="assets/fore_shi.png"    width="30" height="35" id="img10" />
+            <img src="assets/fore_gon.png"    width="30" height="35" id="img11" />
+            <img src="assets/fore_uma.png"    width="30" height="35" id="img12" />
+            <img src="assets/fore_gin.png"    width="30" height="35" id="img13" />
+            <img src="assets/fore_kin.png"    width="30" height="35" id="img14" />
+            <img src="assets/fore_kaku.png"   width="30" height="35" id="img15" />
+            <img src="assets/fore_hi.png"     width="30" height="35" id="img16" />
+            <img src="assets/fore_ou.png"     width="30" height="35" id="img17" />
+            <img src="assets/fore_hatena.png" width="30" height="35" id="img18" />
+            <img src="assets/fore.png"        width="30" height="35" id="img19" /> 
+            <img src="assets/rest_shi.png"    width="30" height="35" id="img20" />
+            <img src="assets/rest_gon.png"    width="30" height="35" id="img21" />
+            <img src="assets/rest_uma.png"    width="30" height="35" id="img22" />
+            <img src="assets/rest_gin.png"    width="30" height="35" id="img23" />
+            <img src="assets/rest_kin.png"    width="30" height="35" id="img24" />
+            <img src="assets/rest_kaku.png"   width="30" height="35" id="img25" />
+            <img src="assets/rest_hi.png"     width="30" height="35" id="img26" />
+            <img src="assets/rest_ou.png"     width="30" height="35" id="img27" />
+            <img src="assets/rest_hatena.png" width="30" height="35" id="img28" />
+            <img src="assets/rest.png"        width="30" height="35" id="img29" /> 
+            <img src="assets/place.png" width="30" height="35" id="img30" />
+            <img src="assets/highlight.png" width="30" height="35" id="img31" /> 
         </p>
 
         <textarea id="kifuText" cols="50" rows="50">
