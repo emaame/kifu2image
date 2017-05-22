@@ -351,7 +351,7 @@ let saveZip = <HTMLInputElement>document.getElementById("save-zip");
 if (isChromeIOS) {
     saveSingle.style.display = 'none';
     saveZip.style.display = 'none';
-    saveSingle.parentElement!.innerHTML += "<p>Safari を使ってください</p>";
+    document.getElementById("download-label")!.innerHTML += "Safari を使ってください";
 }
 
 saveSingle.onclick = (e) => {
