@@ -422,8 +422,12 @@ let SettingList : SettingsDefinition = {
     kifuText: [document.getElementById('kifuText')!.textContent!,viewer.setKifuText.bind(viewer)]
 };
 const settings = new Settings(SettingList);
-
-
+/*
+let removeCookie = <HTMLButtonElement>document.getElementById('removeCookie');
+removeCookie.onclick = () => {
+    settings.reset();
+}
+*/
 let kifuUpload = <HTMLInputElement>document.getElementById("kifuFile");
 kifuUpload.onchange = (e:Event) => {
     let file = kifuUpload.files![0];
