@@ -363,6 +363,7 @@ saveSingle.onclick = (e) => {
         image.src = viewer.canvas.toDataURL("image/png");
         let anchor = <HTMLAnchorElement>document.createElement('a');
         anchor.setAttribute('href', image.src);
+        anchor.setAttribute('target', '_blank');
         anchor.setAttribute('download', filename);
         anchor.click();
     } else {
