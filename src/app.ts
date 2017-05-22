@@ -3,6 +3,10 @@ import * as jszip from "jszip";
 import * as hammer from "hammerjs";
 import * as download from 'downloadjs';
 
+let ua = navigator.userAgent;
+let isChromeIOS = ua.match(/crios/i);
+
+
 type imageList = {[key: number]: HTMLImageElement};
 
 const PLACE     = 30;
@@ -373,11 +377,9 @@ saveZip.onclick = (e) => {
 
     zip.generateAsync({"type":"blob"})
     .then( (blob) => {
-        let ua = navigator.userAgent;
-        let isChromeIOS = ua.match(/crios/i);
         if (isChromeIOS) {
             let iframe = <HTMLIFrameElement>document.createElement('irame');
-            iframe.src = `googlechrome-x-callback://x-callback-url/open/?url='${encodeURIComponent(blob)}'&x-source=Safari&x-success='${encodeURIComponent(location.href)}'`;
+            iframe.src = `googlechrome-x-callback://x-callback-url/open/?url='${encodeURIComponent(blob)}'&x-source=Safari&x-success='${encodeURIComponent(blob)}'`;
             document.appendChild(iframe);
         } else {
             download(blob, `goita_${time2str()}.zip`, "application/zip");}
