@@ -75,10 +75,10 @@ class KifuViewer {
 
         // for Retina
         if (window.devicePixelRatio == 2) {
-            this.canvas.width  = w/2;
-            this.canvas.height = h/2;
-            ctx.scale(0.5, 0.5);
-
+            this.canvas.width  = w;
+            this.canvas.height = h;
+            this.canvas.style.width  = `${w/2.0}px`;
+            this.canvas.style.height = `${h/2.0}px`;
         } else {
             this.canvas.width  = w;
             this.canvas.height = h;
