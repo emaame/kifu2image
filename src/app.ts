@@ -348,6 +348,12 @@ function time2str() {
 let saveSingle = <HTMLInputElement>document.getElementById("save-single");
 let saveZip = <HTMLInputElement>document.getElementById("save-zip");
 
+if (isChromeIOS) {
+    saveSingle.style.display = 'none';
+    saveZip.style.display = 'none';
+    saveSingle.parentElement!.innerHTML += "<p>Safari を使ってください</p>";
+}
+
 saveSingle.onclick = (e) => {
     let filename = `goita_${viewer.statusText()}_${time2str()}.png`
     let blob = viewer.canvas.toBlob( (blob) => {
@@ -377,12 +383,6 @@ saveZip.onclick = (e) => {
 
     zip.generateAsync({"type":"blob"})
     .then( (blob) => {
-        if (isChromeIOS) {
-            let iframe = <HTMLIFrameElement>document.createElement('irame');
-            iframe.src = `googlechrome-x-callback://x-callback-url/open/?url='${encodeURIComponent(blob)}'&x-source=Safari&x-success='${encodeURIComponent(blob)}'`;
-            document.appendChild(iframe);
-        } else {
-            download(blob, `goita_${time2str()}.zip`, "application/zip");}
-        }
+        download(blob, `goita_${time2str()}.zip`, "application/zip");}
     );
 };
