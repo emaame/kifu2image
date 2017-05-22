@@ -71,9 +71,18 @@ class KifuViewer {
         let sx = cx-sw/2.0, sy = cy-sh/2.0;
         
         this.canvas = <HTMLCanvasElement>document.getElementById("canvas");
-        this.canvas.width = w;
-        this.canvas.height = h;
         var ctx : CanvasRenderingContext2D = this.canvas.getContext("2d")!;
+
+        // for Retina
+        if (window.devicePixelRatio == 2) {
+            this.canvas.width  = w/2;
+            this.canvas.height = h/2;
+            ctx.scale(0.5, 0.5);
+
+        } else {
+            this.canvas.width  = w;
+            this.canvas.height = h;
+        }
 
         //clear
         ctx.fillStyle = '#ffffff';
