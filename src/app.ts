@@ -5,6 +5,7 @@ import * as download from 'downloadjs';
 
 let ua = navigator.userAgent;
 let isChromeIOS = ua.match(/crios/i);
+var isIOS = !!navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform);
 
 
 type imageList = {[key: number]: HTMLImageElement};
@@ -356,9 +357,19 @@ if (isChromeIOS) {
 
 saveSingle.onclick = (e) => {
     let filename = `goita_${viewer.statusText()}_${time2str()}.png`
-    let blob = viewer.canvas.toBlob( (blob) => {
-        download(blob!, filename, "image/png");
-    } )
+
+    if (isIOS) {
+        let image = new Image();
+        image.src = viewer.canvas.toDataURL("image/png");
+        let anchor = <HTMLAnchorElement>document.createElement('a');
+        anchor.setAttribute('href', image.src);
+        anchor.setAttribute('download', filename);
+        anchor.click();
+    } else {
+        let blob = viewer.canvas.toBlob( (blob) => {
+            download(blob!, filename, "image/png");
+        } );
+    }
 }
 saveZip.onclick = (e) => {
     let zip = new jszip();
