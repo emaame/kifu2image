@@ -30,10 +30,14 @@
                 border: 0px;
                 background: aquamarine;
             }
+            #kifuFile {
+                display: none;
+            }
             #upload-label {
                 background: darkred;
                 color: white;
                 padding: 4px;
+                margin: 0 1em 0 0;
             }
             #kifuText {
                 display: none;
@@ -45,10 +49,11 @@
     </head>
     <body>
         <div id="nav">
-            <input type="file" id="kifuFile" /><label for="kifuFile" id="upload-label">棋譜ファイルをアップロード</label>
-            <button id="save-single"><i class="fa fa-picture-o" aria-hidden="true"></i> PNG</button>
-            <button id="save-zip"><i class="fa fa-file-archive-o" aria-hidden="true"></i> ZIP</button> <br />
-            <label for="round-buttons">Rounds:</label> <span id="round-buttons">rounds</span>
+            <input type="file" id="kifuFile" /><label for="kifuFile" id="upload-label">棋譜をアップロード</label>
+            <label>ダウンロード：</label>
+            <button id="save-single"><i class="fa fa-picture-o" aria-hidden="true"></i>  PNG</button>
+            <button id="save-zip"><i class="fa fa-file-archive-o" aria-hidden="true"></i>  ZIP</button><br />
+            <label for="round-buttons">Rounds:</label> <span id="round-buttons">rounds</span><br />
             <label for="step-buttons" > Steps:</label> <span id="step-buttons" >steps</span>
         </div>
         <div id="options">

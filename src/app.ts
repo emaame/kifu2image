@@ -1,5 +1,6 @@
 import * as Goita from "./goita_kifu";
 import * as jszip from "jszip";
+import * as hammer from "hammerjs";
 import { saveAs } from 'file-saver';
 
 type imageList = {[key: number]: HTMLImageElement};
@@ -18,8 +19,6 @@ for(let t of [0,1,2]) {
 images[PLACE] = <HTMLImageElement>document.getElementById(`img${PLACE}`);
 images[HIGHLIGHT] = <HTMLImageElement>document.getElementById(`img${HIGHLIGHT}`);
 
-
-
 class KifuViewer {
     playerIndex: number;
     roundIndex: number;
@@ -29,6 +28,16 @@ class KifuViewer {
     canvas: HTMLCanvasElement;
     kw: number;
     kh: number;
+    hammer: HammerManager;
+
+    constructor() {
+        this.canvas = <HTMLCanvasElement>document.getElementById("canvas");
+        this.makePlayerButtons(["P1","P2","P3","P4"]);
+        // for swipe
+        this.hammer = new hammer(this.canvas);
+        this.hammer.on("swipeleft" , (e)=>{ this.setStepIndex( this.stepIndex-1 ); });
+        this.hammer.on("swiperight", (e)=>{ this.setStepIndex( this.stepIndex+1 ); });
+    }
 
     render(state: Goita.State) {
         // 描画のパラメータ
@@ -70,8 +79,7 @@ class KifuViewer {
         let sw = kw*3.5, sh = 50;
         let sx = cx-sw/2.0, sy = cy-sh/2.0;
         
-        this.canvas = <HTMLCanvasElement>document.getElementById("canvas");
-        var ctx : CanvasRenderingContext2D = this.canvas.getContext("2d")!;
+        let ctx : CanvasRenderingContext2D = this.canvas.getContext("2d")!;
 
         // for Retina
         if (window.devicePixelRatio == 2) {
@@ -166,7 +174,7 @@ class KifuViewer {
                 ctx.fillStyle = '#000000';
                 ctx.font = "14px 'Alial'";
                 let x = play_x - kw*2;
-                let y = play_y + kh + pad + 6 + pad;
+                let y = play_y + kh + pad + 9 + pad;
 
                 ctx.fillText(player.name, x, y);
             }
@@ -206,14 +214,31 @@ class KifuViewer {
     stepButtons: Array<HTMLButtonElement> = [];
     playerButtons: Array<HTMLButtonElement> = [];
 
-    setRoundIndex(roundIndex: number) {
-        // update view state
-        if (this.roundButtons[this.roundIndex]) {
-            this.roundButtons[this.roundIndex].classList.remove("pressed");
-        }
-        this.roundIndex = roundIndex;
-        this.roundButtons[this.roundIndex].classList.add("pressed");
+    makePlayerButtons(names:Array<string>) {
+        // player buttons
+        let playerButtonParent = <HTMLElement>document.getElementById("player-buttons");
+        //clear
+        playerButtonParent.innerHTML = "";
+        this.playerButtons = names.map( (name:string, playerIndex:number) => {
+            let button = this.createButton(name);
+            button.onclick = (e) => { this.setPlayerIndex(playerIndex); };
+            playerButtonParent.appendChild(button);
+            return button;
+        } );
+    }
 
+    makeRoundButtons() {
+        let roundButtonParent = <HTMLElement>document.getElementById("round-buttons");
+        //clear
+        roundButtonParent.innerHTML = "";
+        this.roundButtons = this.kifu.rounds.map( (round:Goita.Round, roundIndex:number) => {
+            let button = this.createButton(`${roundIndex}`);
+            button.onclick = (e) => { this.setRoundIndex(roundIndex); };
+            roundButtonParent.appendChild(button);
+            return button;
+        } );
+    }
+    makeStepButtons() {
         //clear
         let stepButtonParent = <HTMLElement>document.getElementById( "step-buttons");
         stepButtonParent.innerHTML = "";
@@ -226,6 +251,21 @@ class KifuViewer {
 
             return button;
         } );
+    }
+
+    setRoundIndex(roundIndex: number) {
+        // update view state
+        if (this.roundButtons[this.roundIndex]) {
+            this.roundButtons[this.roundIndex].classList.remove("pressed");
+        }
+        // check range
+        if (roundIndex < 0) { roundIndex = 0; }
+        if (roundIndex >= this.roundButtons.length) { roundIndex = this.roundButtons.length-1; }
+
+        this.roundIndex = roundIndex;
+        this.roundButtons[this.roundIndex].classList.add("pressed");
+
+        this.makeStepButtons();
         
         this.setStepIndex(0);
     }
@@ -234,6 +274,10 @@ class KifuViewer {
         if (this.stepButtons[this.stepIndex]) {
             this.stepButtons[this.stepIndex].classList.remove("pressed");
         }
+        // check range
+        if (stepIndex < 0) { stepIndex = 0; }
+        if (stepIndex >= this.stepButtons.length) { stepIndex = this.stepButtons.length-1; }
+
         this.stepIndex = stepIndex;
         this.stepButtons[this.stepIndex].classList.add("pressed");
         this.draw();
@@ -243,6 +287,10 @@ class KifuViewer {
         if (this.playerButtons[this.playerIndex]) {
             this.playerButtons[this.playerIndex].classList.remove("pressed");
         }
+        // check range
+        if (playerIndex < 0) { playerIndex = 0; }
+        if (playerIndex >= this.playerButtons.length) { playerIndex = this.playerButtons.length-1; }
+
         this.playerIndex = playerIndex;
         this.playerButtons[this.playerIndex].classList.add("pressed");
         this.draw();
@@ -255,30 +303,14 @@ class KifuViewer {
         };
         this.openHand = openHandElement.checked;
 
-        let roundButtonParent = <HTMLElement>document.getElementById("round-buttons");
-        //clear
-        roundButtonParent.innerHTML = "";
-        this.roundButtons = kifu.rounds.map( (round:Goita.Round, roundIndex:number) => {
-            let button = this.createButton(`${roundIndex}`);
-            button.onclick = (e) => { this.setRoundIndex(roundIndex); };
-            roundButtonParent.appendChild(button);
-            return button;
-        } );
-
-        let playerButtonParent = <HTMLElement>document.getElementById("player-buttons");
-        //clear
-        playerButtonParent.innerHTML = "";
-        this.playerButtons = kifu.rounds[0].states[0].players.map( (player:Goita.Player, playerIndex:number) => {
-            let button = this.createButton(`P${playerIndex + 1}`);
-            button.onclick = (e) => { this.setPlayerIndex(playerIndex); };
-            playerButtonParent.appendChild(button);
-            return button;
-        } );
+        this.makeRoundButtons();
 
         this.setRoundIndex(0);
         this.setPlayerIndex(0);
     }
 }
+
+
 let viewer = new KifuViewer();
 {
     let kifu = new Goita.Kifu;
