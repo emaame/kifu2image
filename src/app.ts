@@ -1,7 +1,8 @@
 import * as Goita from "./goita_kifu";
-import * as jszip from "jszip";
-import * as hammer from "hammerjs";
+import * as JSZip from "jszip";
+import * as Hammer from "hammerjs";
 import * as download from 'downloadjs';
+import { Settings, SettingsDefinition } from './settings';
 
 let ua = navigator.userAgent;
 let isChromeIOS = ua.match(/crios/i);
@@ -28,23 +29,29 @@ class KifuViewer {
     playerIndex: number;
     roundIndex: number;
     stepIndex: number;
+    
     openHand: boolean;
+    reverse: boolean;
+
+    basename: string;
+    kifuText: string;
+
     kifu: Goita.Kifu;
     canvas: HTMLCanvasElement;
     kw: number;
     kh: number;
-    hammer: HammerManager;
 
     constructor() {
         this.canvas = <HTMLCanvasElement>document.getElementById("canvas");
         this.makePlayerButtons(["P1","P2","P3","P4"]);
-        // for swipe
-        this.hammer = new hammer(this.canvas);
-        this.hammer.on("swipeleft" , (e)=>{ this.setStepIndex( this.stepIndex-1 ); });
-        this.hammer.on("swiperight", (e)=>{ this.setStepIndex( this.stepIndex+1 ); });
+    }
+
+    pageDirection() {
+        return this.reverse ? -1 : 1;
     }
 
     render(state: Goita.State) {
+        if (!state) {return; }
         // 描画のパラメータ
         let kw = this.kw, kh = this.kh;
         
@@ -188,31 +195,43 @@ class KifuViewer {
     }
 
     draw() {
+        if (!this.kifu) {return; }
+
         this.kw = images[0].width;
         this.kh = images[0].height;
         this.render( this.kifu.rounds[this.roundIndex].states[this.stepIndex] );
     }
 
-    reset(kifu : Goita.Kifu) {
-        this.kifu = kifu;
-        this.resetNav(kifu);
+    setKifuText(kifuText:string) {
+        this.kifuText = kifuText;
+        this.kifu = new Goita.Kifu();
+        this.kifu.load(kifuText);
+        this.resetNav(this.kifu);
         this.draw();
     }
 
     statusText() {
-        return `goita_round${viewer.roundIndex}_step${viewer.stepIndex}_player${viewer.playerIndex+1}`
+        return `${this.basename}_round${viewer.roundIndex}_step${viewer.stepIndex}_player${viewer.playerIndex+1}`
     }
 
+    setFilename(filename:string) {
+        this.basename = filename.replace(/.yaml$/, '');
+    }
+
+
+    setOpenHand(openHand: boolean) {
+        this.openHand = openHand;
+        this.draw();
+    }
+    setReverse(reverse: boolean) {
+        this.reverse = reverse;
+        this.draw();
+    }
 
     private createButton(text:string) {
         let button = <HTMLButtonElement>document.createElement("button");
         button.textContent = text;
         return button;
-    }
-
-    setOpenHand(openHand: boolean) {
-        this.openHand = openHand;
-        this.draw();
     }
 
     roundButtons: Array<HTMLButtonElement> = [];
@@ -237,7 +256,7 @@ class KifuViewer {
         //clear
         roundButtonParent.innerHTML = "";
         this.roundButtons = this.kifu.rounds.map( (round:Goita.Round, roundIndex:number) => {
-            let button = this.createButton(`${roundIndex}`);
+            let button = this.createButton(`${roundIndex+1}`);
             button.onclick = (e) => { this.setRoundIndex(roundIndex); };
             roundButtonParent.appendChild(button);
             return button;
@@ -302,12 +321,6 @@ class KifuViewer {
     }
 
     resetNav(kifu : Goita.Kifu) {
-        let openHandElement = <HTMLInputElement>document.getElementById("open-hand");
-        openHandElement.onchange = (e) => {
-            this.setOpenHand( openHandElement.checked );
-        };
-        this.openHand = openHandElement.checked;
-
         this.makeRoundButtons();
 
         this.setRoundIndex(0);
@@ -317,29 +330,6 @@ class KifuViewer {
 
 
 let viewer = new KifuViewer();
-{
-    let kifu = new Goita.Kifu;
-    let textarea = <HTMLTextAreaElement>document.getElementById("kifuText");
-    kifu.load( textarea.textContent! );
-    viewer.reset(kifu);
-}
-
-let kifuUpload = <HTMLInputElement>document.getElementById("kifuFile");
-kifuUpload.onchange = (e:Event) => {
-    let file = kifuUpload.files![0];
-    if (!file.name.match(/.yaml$/)) {
-        alert("棋譜ファイルは YAML 形式です");
-        return;
-    }
-
-    var reader = new FileReader();
-    reader.onload = () => {
-        let kifu = new Goita.Kifu;
-        kifu.load( reader.result );
-        viewer.reset(kifu);
-    }
-    reader.readAsText(file);
-}
 
 function time2str() {
     let date = new Date();
@@ -356,7 +346,7 @@ if (isChromeIOS) {
 }
 
 saveSingle.onclick = (e) => {
-    let filename = `goita_${viewer.statusText()}_${time2str()}.png`
+    let filename = `${viewer.basename}_${viewer.statusText()}_${time2str()}.png`
 
     if (isIOS) {
         let image = new Image();
@@ -373,10 +363,11 @@ saveSingle.onclick = (e) => {
     }
 }
 saveZip.onclick = (e) => {
-    let zip = new jszip();
+    let zip = new JSZip();
     let savable = new Image();
 
     saveZip.disabled = true;
+    viewer.canvas.style.display = 'none';
 
     viewer.kifu.rounds.forEach((round, roundIndex) => {
         viewer.setRoundIndex(roundIndex);
@@ -389,12 +380,60 @@ saveZip.onclick = (e) => {
         });
     });
 
-    zip.file(`goita_${time2str()}.yaml`, viewer.kifu.text);
+    zip.file(`${viewer.basename}_${time2str()}.yaml`, viewer.kifuText);
 
     saveZip.disabled = false;
+    viewer.canvas.style.display = 'block';
 
     zip.generateAsync({"type":"blob"})
     .then( (blob) => {
-        download(blob, `goita_${time2str()}.zip`, "application/zip");}
+        download(blob, `${viewer.basename}_${time2str()}.zip`, "application/zip");}
     );
 };
+
+
+/* ページ移動操作 */
+let funcL = ()=>{ viewer.setStepIndex( viewer.stepIndex + (-1)*viewer.pageDirection() ); }
+let funcR = ()=>{ viewer.setStepIndex( viewer.stepIndex + ( 1)*viewer.pageDirection() ); }
+
+// for swipe
+let hammer = new Hammer(viewer.canvas);
+hammer.on("swipeleft" , funcL);
+hammer.on("swiperight", funcR);
+
+// for keyboard
+document.onkeypress = (e:KeyboardEvent) => {
+    switch(e.key) {
+        case "ArrowLeft" : return funcL();
+        case "ArrowRight": return funcR();
+    }
+    // keyCode is deprecated
+    switch(e.keyCode) {
+        case 37: return funcL();
+        case 39: return funcR();
+    }
+};
+
+/* 設定の読み込みと反映 */
+let SettingList : SettingsDefinition = {
+    openHand: [true , viewer.setOpenHand.bind(viewer)],
+    reverse:  [false, viewer.setReverse .bind(viewer)],
+    filename: ["goita.yaml", viewer.setFilename.bind(viewer)],
+    kifuText: [document.getElementById('kifuText')!.textContent!,viewer.setKifuText.bind(viewer)]
+};
+const settings = new Settings(SettingList);
+
+
+let kifuUpload = <HTMLInputElement>document.getElementById("kifuFile");
+kifuUpload.onchange = (e:Event) => {
+    let file = kifuUpload.files![0];
+    if (!file.name.match(/.yaml$/)) {
+        alert("棋譜ファイルは YAML 形式です");
+        return;
+    }
+    settings.set('filename', file.name);
+
+    var reader = new FileReader();
+    reader.onload = () => { settings.set('kifuText', reader.result); }
+    reader.readAsText(file);
+}

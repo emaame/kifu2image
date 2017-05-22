@@ -185,12 +185,11 @@ export class Round {
 export class Kifu {
     version: string;
     rounds: Array<Round> = [];
-    text: string;
 
     load(yamlText:string) {
+        this.rounds = [];
         var kifuData = jsyaml.safeLoad(yamlText);
         
-        this.text = yamlText;
         this.version = kifuData.version;
         for(let log of kifuData.log) {
             var round = new Round;
