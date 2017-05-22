@@ -354,6 +354,8 @@ saveZip.onclick = (e) => {
     let zip = new jszip();
     let savable = new Image();
 
+    saveZip.disabled = true;
+
     viewer.kifu.rounds.forEach((round, roundIndex) => {
         viewer.setRoundIndex(roundIndex);
         round.states.forEach((state, stepIndex) => {
@@ -367,6 +369,18 @@ saveZip.onclick = (e) => {
 
     zip.file(`goita_${time2str()}.yaml`, viewer.kifu.text);
 
+    saveZip.disabled = false;
+
     zip.generateAsync({"type":"blob"})
-    .then( (blob) => { download(blob, `goita_${time2str()}.zip`, "application/zip");});
+    .then( (blob) => {
+        let ua = navigator.userAgent;
+        let isChromeIOS = ua.match(/crios/i);
+        if (isChromeIOS) {
+            let iframe = <HTMLIFrameElement>document.createElement('irame');
+            iframe.src = `googlechrome-x-callback://x-callback-url/open/?url='${encodeURIComponent(blob)}'&x-source=Safari&x-success='${encodeURIComponent(location.href)}'`;
+            document.appendChild(iframe);
+        } else {
+            download(blob, `goita_${time2str()}.zip`, "application/zip");}
+        }
+    );
 };
