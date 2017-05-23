@@ -207,9 +207,12 @@ class KifuViewer {
     }
 
     setKifuText(kifuText:string) {
+        let newKifu = new Goita.Kifu();
+        newKifu.load(kifuText);
+        if (newKifu.rounds.length <= 0) { return; }
+        
         this.kifuText = kifuText;
-        this.kifu = new Goita.Kifu();
-        this.kifu.load(kifuText);
+        this.kifu = newKifu;
         this.resetNav(this.kifu);
         this.draw();
     }
