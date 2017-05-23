@@ -41,9 +41,18 @@ class KifuViewer {
     kw: number;
     kh: number;
 
+    scale: number;
+
     constructor() {
         this.canvas = <HTMLCanvasElement>document.getElementById("canvas");
         this.makePlayerButtons(["P1","P2","P3","P4"]);
+
+        // for Retina
+        if (window.devicePixelRatio == 2) {
+            this.scale = 0.5;
+        } else {
+            this.scale = 1.0;
+        }
     }
 
     pageDirection() {
@@ -93,16 +102,11 @@ class KifuViewer {
         
         let ctx : CanvasRenderingContext2D = this.canvas.getContext("2d")!;
 
-        // for Retina
-        if (window.devicePixelRatio == 2) {
-            this.canvas.width  = w;
-            this.canvas.height = h;
-            this.canvas.style.width  = `${w/2.0}px`;
-            this.canvas.style.height = `${h/2.0}px`;
-        } else {
-            this.canvas.width  = w;
-            this.canvas.height = h;
-        }
+        // scale
+        this.canvas.width  = w;
+        this.canvas.height = h;
+        this.canvas.style.width  = `${w * this.scale}px`;
+        this.canvas.style.height = `${h * this.scale}px`;
 
         //clear
         ctx.fillStyle = '#ffffff';
@@ -225,6 +229,10 @@ class KifuViewer {
     }
     setReverse(reverse: boolean) {
         this.reverse = reverse;
+        this.draw();
+    }
+    setScale(scale: number) {
+        this.scale = scale;
         this.draw();
     }
 
@@ -419,15 +427,16 @@ let SettingList : SettingsDefinition = {
     openHand: [true , viewer.setOpenHand.bind(viewer)],
     reverse:  [false, viewer.setReverse .bind(viewer)],
     filename: ["goita.yaml", viewer.setFilename.bind(viewer)],
+    scale:    [viewer.scale, viewer.setScale   .bind(viewer)],
     kifuText: [document.getElementById('kifuText')!.textContent!,viewer.setKifuText.bind(viewer)]
 };
 const settings = new Settings(SettingList);
-/*
+
 let removeCookie = <HTMLButtonElement>document.getElementById('removeCookie');
 removeCookie.onclick = () => {
     settings.reset();
 }
-*/
+
 let kifuUpload = <HTMLInputElement>document.getElementById("kifuFile");
 kifuUpload.onchange = (e:Event) => {
     let file = kifuUpload.files![0];

@@ -12,42 +12,46 @@ export type SettingsDefinition = {[key:string]: [SettingType, Function] };
 export class Settings {
     listeners: {[key:string]: Function};
     settings: SettingsMap;
+    definition: SettingsDefinition;
 
     // load from Cookie
     constructor(definition: SettingsDefinition) {
         this.listeners = {};
-        this.settings = Cookie.getJSON('settings') || {};
+        this.settings = {};
+        this.definition = definition;
         for(let key in definition) {
             let [defaultValue, callback] = definition[key];
-            let value = (this.settings[key]===undefined) ? defaultValue : this.settings[key];
+            let cookie_val = Cookie.get(key);
+            let value = (cookie_val===undefined) ? defaultValue.toString() : cookie_val;
 
-            this.settings[key] = value;
             this.listeners[key] = callback;
 
             let element = <HTMLInputElement>document.getElementById(key);
             element.onchange = this.changeListener.bind(this, key, element);
-            if      (typeof value === 'boolean') { callback(value); element.checked = value; }
-            else if (typeof value === 'number' ) { callback(value); element.textContent = value.toString(); }
-            else if (typeof value === 'string' ) { callback(value); element.textContent = value; }
+            
+            switch(typeof defaultValue) {
+            case 'boolean': { let v = (value=='true')  ; this.set(key, v); break; }
+            case 'number' : { let v = parseFloat(value); this.set(key, v); break; }
+            case 'string' : { let v = value            ; this.set(key, v); break; }
+            }
         }
-        Cookie.set('settings', this.settings);
     }
 
     changeListener(key:string, element:HTMLInputElement) {
-        switch(typeof this.settings[key]) {
-            case 'boolean': { let v = element.checked               ; return this.set(key, v); }
-            case 'number' : { let v = parseInt(element.textContent!); return this.set(key, v); }
-            case 'string' : { let v = element.textContent!          ; return this.set(key, v); }
+        let type = typeof this.definition[key][0];
+        switch(type) {
+            case 'boolean': { let v = element.checked          ; return this.set(key, v); }
+            case 'number' : { let v = parseFloat(element.value); return this.set(key, v); }
+            case 'string' : { let v = element.value            ; return this.set(key, v); }
         }
     }
 
     set(key:string, value:SettingType) {
         let element = <HTMLInputElement>document.getElementById(key);
-        this.settings[key] = value;
         if      (typeof value === 'boolean') { element.checked = value; }
-        else if (typeof value === 'number' ) { element.textContent = value.toString(); }
-        else if (typeof value === 'string' ) { element.textContent = value; }
-        Cookie.set('settings', this.settings);
+        else if (typeof value === 'number' ) { element.value = value.toString(); }
+        else if (typeof value === 'string' ) { element.value = value; }
+        Cookie.set(key, value);
         this.listeners[key].call(this, value);
     }
     get(key:string) : SettingType {
@@ -55,6 +59,9 @@ export class Settings {
     }
 
     reset() {
-        Cookie.remove('settings', this.settings);
+        for(let key in this.definition) {
+            let [defaultValue, callback] = this.definition[key];
+            this.set(key, defaultValue);
+        }
     }
 }

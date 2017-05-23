@@ -60,15 +60,24 @@
             <label for="player-buttons">視点</label> <span id="player-buttons" >players</span>
             <input type="checkbox" id="openHand" checked /><label for="openHand">手を開く</label>
             <input type="checkbox" id="reverse" /><label for="reverse">逆めくり</label>
+            <label for="scale"><i class="fa fa-search-plus" aria-hidden="true"></i> 倍率</label>
+            <select id="scale">
+                <option value="0.3">0.3</option>
+                <option value="0.4">0.4</option>
+                <option value="0.5">0.5</option>
+                <option value="0.6">0.6</option>
+                <option value="0.7">0.7</option>
+                <option value="0.8">0.8</option>
+                <option value="0.9">0.9</option>
+                <option value="1.0">1.0</option>
+            </select>
             <input id="filename" />
         </div>
 
         <canvas id="canvas" width="542" height="542"></canvas>
-<!--
         <p>
             <button id="removeCookie">おかしくなったとき用</button>
         </p>
--->
         <p>
             <address>連絡先；<a href="ameema+goita@gmail.com">ema &lt;ameema@gmail.com&gt;</a></address>
             <address>ソースコード：<a href="https://github.com/emaame/kifu2image">github</a></address>
