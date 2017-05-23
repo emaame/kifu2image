@@ -15,7 +15,7 @@
             #nav button,
             #options button {
                 border: 1px;
-                width: 2.5em;
+                width: 2.3em;
                 text-align: center;
                 padding: 0;
                 margin: 0 0.1em;
@@ -39,6 +39,12 @@
                 padding: 5px;
                 margin: 0 1em 0 0;
             }
+            #options {
+                margin-top: 0.5em;
+            }
+            #canvas {
+                margin: 0.5em;
+            }
             #kifuText, #filename {
                 display: none;
             }
@@ -54,13 +60,13 @@
             <button id="save-single"><i class="fa fa-picture-o" aria-hidden="true"></i> PNG</button>
             <button id="save-zip"><i class="fa fa-file-archive-o" aria-hidden="true"></i> ZIP</button><br />
             <label for="round-buttons">ラウンド</label> <span id="round-buttons">rounds</span><br />
-            <label for="step-buttons" >手番</label> <span id="step-buttons" >steps</span>
+            <label for="step-buttons" >手番</label> <span id="step-buttons" >steps</span><br />
+            <label for="player-buttons">視点</label> <span id="player-buttons" >players</span><br />
         </div>
         <div id="options">
-            <label for="player-buttons">視点</label> <span id="player-buttons" >players</span>
             <input type="checkbox" id="openHand" checked /><label for="openHand">手を開く</label>
-            <input type="checkbox" id="reverse" /><label for="reverse">逆めくり</label>
-            <label for="scale"><i class="fa fa-search-plus" aria-hidden="true"></i> 倍率</label>
+            <input type="checkbox" id="reverse" /><label for="reverse">逆めくり</label> &nbsp;
+            <label for="scale">表示倍率</label>
             <select id="scale">
                 <option value="0.3">0.3</option>
                 <option value="0.4">0.4</option>
@@ -76,7 +82,7 @@
 
         <canvas id="canvas" width="542" height="542"></canvas>
         <p>
-            <button id="removeCookie">おかしくなったとき用</button>
+            <button id="resetCookie">設定がおかしくなったとき用</button>
         </p>
         <p>
             <address>連絡先；<a href="ameema+goita@gmail.com">ema &lt;ameema@gmail.com&gt;</a></address>

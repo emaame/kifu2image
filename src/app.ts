@@ -406,8 +406,8 @@ let funcR = ()=>{ viewer.setStepIndex( viewer.stepIndex + ( 1)*viewer.pageDirect
 
 // for swipe
 let hammer = new Hammer(viewer.canvas);
-hammer.on("swipeleft" , funcL);
-hammer.on("swiperight", funcR);
+hammer.on("swipeleft" , funcR);
+hammer.on("swiperight", funcL);
 
 // for keyboard
 document.onkeypress = (e:KeyboardEvent) => {
@@ -432,8 +432,8 @@ let SettingList : SettingsDefinition = {
 };
 const settings = new Settings(SettingList);
 
-let removeCookie = <HTMLButtonElement>document.getElementById('removeCookie');
-removeCookie.onclick = () => {
+let resetCookie = <HTMLButtonElement>document.getElementById('resetCookie');
+resetCookie.onclick = () => {
     settings.reset();
 }
 
